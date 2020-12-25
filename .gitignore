@@ -1,0 +1,11 @@
+*.png
+*.pse
+*.txt
+*.out
+within_*
+6lu7*
+1u*
+*.dat
+*.csv
+.DS_Store
+*.ipynb
