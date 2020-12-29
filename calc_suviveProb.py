@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 
-def survivalProb(univ, selection, start=0, stop=None, step=1, tau_max=30):
+def survivalProb(univ, selection, start = 0, stop = None, step = 1, tau_max = 30):
     #show the first frame's atoms selected to debug
     with open(f"selected_atoms_from_first_frame.txt", "w") as fout:
         for atom in univ.select_atoms(selection):   
@@ -58,26 +58,31 @@ def main():
         water_selections = make_selections_for_localised_water(selections, radius)
 
     elif water_focus == 'entire':
-        water_selections = ['name OW and around 4.5 protein ']
+        water_selections = ['name OW and around 5.0 protein ']
 
     else:
         exit(f'Stop: Wrong parameter was specified {water_focus}')
 
-
+    
     ## Compute suvival probabilities for each input file.
-    scale_factor = 1.0 # for frame no conversion into X 
+    #scale_factor = 1.0 # for frame no conversion into X 
     for i, itraj in enumerate(inTrajs):
         univ = MDAnalysis.Universe(ref, itraj, in_memory=True)
+        
+#        N_traj = len(univ.trajectory) - 1
+#        N_traj = N_traj - begin
 
         #Survival Probability is calculated here
-        taus, sps, selected_indexes = [], [], []
+        #taus, sps, selected_indexes = [], [], []
         for j, sele in enumerate(water_selections):
-            tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=30)
-            taus.append(scale_factor * tau_vals)
-            sps.append(suv_probs)
+            #tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=100)
+            tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=1000)
+            #taus.append(scale_factor * tau_vals)
+            #sps.append(suv_probs)
             prefix = chr(j+97).upper()+str(i)
-            jotDown(taus=scale_factor*tau_vals, prefix=prefix, sps=suv_probs, nameForlog=itraj) 
+            jotDown(taus=tau_vals, prefix=prefix, sps=suv_probs, nameForlog=itraj) 
             
+            #selected_indexes = sorted(selected_indexes)
             indexes_every_frames = []
             for ind in selected_indexes:
                 ind = list(map(int, ind))
