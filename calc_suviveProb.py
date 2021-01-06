@@ -74,13 +74,18 @@ def main():
         
         N_traj = len(univ.trajectory) - 1
         N_traj = N_traj - begin
-        print('- Tau_max is {N_traj}.')
+        print('* Tau_max is {N_traj}.')
 
         #Survival Probability is calculated here
         for j, sele in enumerate(water_selections):
-            tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=N_traj)
-            #tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=1000)
-
+            #tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=N_traj)
+            
+            if water_focus == 'local':
+                tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=1000)
+            
+            elif water_focus == 'entire':
+                tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=1)
+            
             prefix = chr(j+97).upper()+str(i)
             jotDown(taus=tau_vals, prefix=prefix, sps=suv_probs, nameForlog=itraj) 
             
