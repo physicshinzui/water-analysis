@@ -6,19 +6,22 @@ def read_wat_ids(filename, tau_lower_bound=50.0):
             index, tau = str(line.split(',')[0]), float(line.split(',')[1])
             if tau >= tau_lower_bound: 
                 py_sele.append(index)
-    
-    wat_ids = 'sele id ' + '+'.join(py_sele)
-    return wat_ids
 
-def selection_filtered_by_distance():
-    pass
+    if len(py_sele) == 0:
+        wat_ids = None
+        return wat_ids
+    
+    else:
+        #wat_ids = 'sele id ' + '+'.join(py_sele)
+        wat_ids = '+'.join(py_sele)
+        return wat_ids
 
 def get_atom_index_filtered_by_sasa(sasa_dict, relsasa_cutoff = 0.1, outfile=None): #outfile has not been implemented yet. 
     atom_index_w_large_sasa = []
     for key, value in sasa_dict.items():
         chain = key[2]
         resi  = key[-1]
-        
+
         if value <= relsasa_cutoff:
             atom_index_w_large_sasa.append([chain, resi])
 
@@ -35,7 +38,15 @@ def make_selections_from(atom_index, target_object):
             continue     
         selections.append(sele)
     
-    selection_strings = f'{target_object} and (' + selections[0] + ' or ' + ' or '.join(selections[1:]) + ')'
+    if len(selections) > 2:
+        selection_strings = f'{target_object} and (' + selections[0] + ' or ' + ' or '.join(selections[1:]) + ')'
+    
+    elif len(selections) == 1:
+        selection_strings = f'{target_object} and ' + selections
+    
+    else:
+        selection_strings = None
+        
     return selection_strings
 
 def show_interest(selections_of_interest):
@@ -52,16 +63,26 @@ def main():
     ref  = sys.argv[2]
     traj = sys.argv[3]
     wat_ids = read_wat_ids(filename_wat_ids)
-
+    print('wat_ids selection : ', wat_ids)
+     
     #load a reference and the corresponding trajectory
     cmd.load(ref)
     cmd.load_traj(traj)
     cmd.util.cbc('polymer')    
     
     #Create wat_obj
-    wat_obj_name = 'wat_obj'
-    cmd.select(wat_obj_name, f'id {wat_ids}')
-    
+    wat_obj_name = 'wat_obj' 
+
+    # 
+    if wat_ids == None:
+        print('wat id is none')
+        cmd.select(wat_obj_name, None)
+
+    else: 
+        print('wat_ids:', wat_ids)
+        cmd.select(wat_obj_name, f'id {wat_ids}')
+    #---
+
     # Remove short-stay water molecules 
     cmd.remove(f'not {wat_obj_name} and not polymer')
 
