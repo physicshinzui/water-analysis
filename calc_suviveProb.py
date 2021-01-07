@@ -2,7 +2,6 @@
 import MDAnalysis
 #from MDAnalysis.analysis.waterdynamics import SurvivalProbability as SP
 from MDAnalysis.analysis.si_waterdynamics import SurvivalProbability as SP
-
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
@@ -49,9 +48,6 @@ def make_selections_for_localised_water(selections, radius):
         print(f'{i}, {water_selections[i]}')
     return water_selections
 
-def loop():
-    pass
-
 def main():
     ref, inTrajs, radius, selections, begin, water_focus = parser()
     print('INPUT TRAJECTORIES: \n', inTrajs)
@@ -72,15 +68,14 @@ def main():
     for i, itraj in enumerate(inTrajs):
         univ = MDAnalysis.Universe(ref, itraj, in_memory=True)
         
-        N_traj = len(univ.trajectory) - 1
-        N_traj = N_traj - begin
-        print('* Tau_max is {N_traj}.')
-
         #Survival Probability is calculated here
         for j, sele in enumerate(water_selections):
-            #tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=N_traj)
             
             if water_focus == 'local':
+                N_traj = len(univ.trajectory) - 1 
+                N_traj = N_traj - begin
+                print(f'* Tau_max is set to {N_traj}.')
+                #tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=N_traj)
                 tau_vals, suv_probs, selected_indexes = survivalProb(univ, sele, start=begin, stop=None, step=1, tau_max=1000)
             
             elif water_focus == 'entire':
