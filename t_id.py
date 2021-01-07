@@ -4,9 +4,6 @@ import pandas as pd
 import sys
 import logging
 
-def tau_id(atom_id, t_begin,t_end):
-    pass
-
 def read_file(filename):
     with open(filename, 'r') as fin:
         ids_per_frame = []
