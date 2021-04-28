@@ -31,6 +31,7 @@ def make_selections_from(atom_index, target_object):
     selections = []
     for i, (chain, resi) in enumerate(atom_index):
         sele = f'(chain {chain} and resi {resi} and name OW)'
+        #sele = f'(chain {chain} and resi {resi})'
         if chain == '':
             #For state 1, "chain" variable is blank, because when flattering {tmp_obj_name}, 
             #blank seemed to be assigned to the chain id in the state 1
@@ -51,7 +52,7 @@ def make_selections_from(atom_index, target_object):
 
 def show_interest(selections_of_interest):
     for sele in selections_of_interest:
-        cmd.show('spheres', sele)
+        cmd.show('sticks', sele)
         cmd.util.cbag(sele)
     return 
 
@@ -112,11 +113,14 @@ def main():
     water_long_stay_obj = 'water_long_stay'
     cmd.create(water_long_stay_obj, sele_strings)
     cmd.show('surface', water_long_stay_obj)
-    cmd.orient('polymer')
 
     #optional showing 
+#    cmd.orient('polymer and resi 41+145+167')
+    cmd.orient('polymer and resi 18')
+    cmd.orient('polymer')
     show_interest(['polymer and resi 41+145'])
     cmd.do('set cartoon_transparency, 0.5')
+    cmd.save('session.pse')
     cmd.png('fig.png', width=1000, height=1000, dpi = 300, ray = 1)
 
 main()
